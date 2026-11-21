@@ -1,9 +1,23 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"log"
+
+	"github.com/gin-gonic/gin"
+	"github.com/seriiserii825/go-flyline/internal/platform/config"
+)
 
 func main() {
-	r := gin.Default() // = gin.New() + Logger + Recovery
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	gin.SetMode(cfg.GinMode)
+	r := gin.Default()
 	r.GET("/api/v1/health", func(c *gin.Context) { c.JSON(200, gin.H{"status": "ok"}) })
-	r.Run(":8080")
+
+	if err := r.Run(cfg.HTTPAddr()); err != nil {
+		log.Fatal(err)
+	}
 }

@@ -2,7 +2,10 @@ module github.com/seriiserii825/go-flyline
 
 go 1.27.4
 
-require github.com/gin-gonic/gin v1.12.0
+require (
+	github.com/gin-gonic/gin v1.12.0
+	github.com/kelseyhightower/envconfig v1.4.0
+)
 
 require (
 	github.com/bytedance/gopkg v0.1.3 // indirect
