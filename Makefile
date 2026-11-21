@@ -1,0 +1,58 @@
+include .env
+export
+
+MAKEFLAGS += --no-print-directory
+
+env-up:
+	docker compose up -d postgres adminer
+
+env-down:
+	docker compose down 
+
+env-port-forward:
+	@docker compose up -d socat
+
+env-port-stop:
+	@docker compose down socat
+
+migrate-create:
+	@if [ -z "$(seq)" ]; then \
+		echo "Error: seq variable is not set"; \
+		exit 1; \
+	fi
+	mkdir -p migrations
+	docker compose run --rm --user $$(id -u):$$(id -g) migrate \
+		create \
+		-ext sql \
+		-dir /migrations \
+		-seq $(seq)
+
+migrate-up:
+	@$(MAKE) migrate-action action=up
+
+migrate-down:
+	@$(MAKE) migrate-action action=down
+
+migrate-action:
+	@if [ -z "$(action)" ]; then \
+		echo "Error: action variable is not set, make migrate-action action=\"up\""; \
+		exit 1; \
+	fi
+	@docker compose run --rm  migrate \
+		-path /migrations \
+		-database "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@todoapp-postgres:5432/$(POSTGRES_DB)?sslmode=disable" \
+		"$(action)"
+
+migrate-force:
+	@if [ -z "$(v)" ]; then \
+		echo "Error: v variable is not set, make migrate-force v=1 (or v=-1 for no version)"; \
+		exit 1; \
+	fi
+	@docker compose run --rm migrate \
+		-path /migrations \
+		-database "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@todoapp-postgres:5432/$(POSTGRES_DB)?sslmode=disable" \
+		force -- $(v)
+
+todoapp-run:
+	@go run ./cmd/flyline/main.go && \
+	go mod tidy
