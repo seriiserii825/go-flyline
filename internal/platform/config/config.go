@@ -48,11 +48,11 @@ func (c Config) validate() error {
 	}
 
 	if c.JWTAccessTTL <= 0 || c.RefreshTTL <= 0 {
-		return errors.New("JWT_ACCESS_TTL and REFRESH_TTL must be positive")
+		return errors.New("JWT_ACCESS_TTL and JWT_REFRESH_TTL must be positive")
 	}
 
 	if c.RefreshTTL <= c.JWTAccessTTL {
-		return errors.New("REFRESH_TTL must be longer than JWT_ACCESS_TTL")
+		return errors.New("JWT_REFRESH_TTL must be longer than JWT_ACCESS_TTL")
 	}
 
 	return nil
