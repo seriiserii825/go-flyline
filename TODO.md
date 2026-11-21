@@ -11,6 +11,7 @@
 
 - [x] `go mod init github.com/seriiserii825/go-flyline`
 - [x] Структура папок (по фичам):
+
   ```
   cmd/flyline/main.go          # только сборка зависимостей и запуск
   internal/
@@ -45,6 +46,7 @@
   ```
 
   Правила:
+
   - `gin` импортируется только в `handler.go`, `middleware.go`, `routes.go`, `cookie.go` и в `platform/httpserver`
   - импорты только `auth → user`, обратно нельзя
 
@@ -57,7 +59,7 @@
 ## 1. Gin: установка и настройка
 
 - [x] `go get github.com/gin-gonic/gin`
-- [ ] `internal/platform/httpserver`: создать `gin.New()` + `gin.Recovery()` + свой логгер (slog)
+- [x] `internal/platform/httpserver`: создать `gin.New()` + `gin.Recovery()` + свой логгер (slog)
 - [x] Режим через env: `GIN_MODE=debug|release` (`gin.SetMode(cfg.GinMode)`)
 - [ ] Группа роутов `/api/v1`
 - [ ] `GET /api/v1/health` → `{"status":"ok"}` (проверка, что сервер и БД живы)
