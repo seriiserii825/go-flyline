@@ -10,7 +10,7 @@
 ## 0. Инициализация проекта
 
 - [x] `go mod init github.com/seriiserii825/go-flyline`
-- [ ] Структура папок (по фичам):
+- [x] Структура папок (по фичам):
   ```
   cmd/flyline/main.go          # только сборка зависимостей и запуск
   internal/
@@ -43,17 +43,22 @@
   migrations/
   docs/                        # генерируется swag, руками не править
   ```
-- [ ] Правило: `gin` импортируется только в `handler.go`, `middleware.go`, `routes.go`, `cookie.go` и в `platform/httpserver`
-- [ ] Правило: импорты только `auth → user`, обратно нельзя
-- [ ] Добавить `.env.example` (без секретов) — `.gitignore` его уже пропускает
-- [ ] Переменные в `.env`: `HTTP_PORT`, `JWT_ACCESS_SECRET`, `JWT_ACCESS_TTL=15m`, `REFRESH_TTL=720h`, `DATABASE_URL`
-- [ ] Конфиг через `envconfig` (`internal/platform/config`)
+
+  Правила:
+  - `gin` импортируется только в `handler.go`, `middleware.go`, `routes.go`, `cookie.go` и в `platform/httpserver`
+  - импорты только `auth → user`, обратно нельзя
+
+- [x] Добавить `.env.example` (без секретов) — `.gitignore` его уже пропускает
+- [x] Переменные в `.env`: `HTTP_PORT`, `ADMINER_PORT`, `GIN_MODE`, `DATABASE_URL`, `JWT_SECRET`, `JWT_ACCESS_TTL=15m`,
+      `JWT_REFRESH_TTL=720h`
+- [x] Конфиг через `envconfig` (`internal/platform/config`)
+- [x] Валидация конфига при старте (`GIN_MODE`, длина `JWT_SECRET` ≥ 32, `JWT_REFRESH_TTL` > `JWT_ACCESS_TTL`)
 
 ## 1. Gin: установка и настройка
 
-- [ ] `go get github.com/gin-gonic/gin`
+- [x] `go get github.com/gin-gonic/gin`
 - [ ] `internal/platform/httpserver`: создать `gin.New()` + `gin.Recovery()` + свой логгер (slog)
-- [ ] Режим через env: `GIN_MODE=debug|release`
+- [x] Режим через env: `GIN_MODE=debug|release` (`gin.SetMode(cfg.GinMode)`)
 - [ ] Группа роутов `/api/v1`
 - [ ] `GET /api/v1/health` → `{"status":"ok"}` (проверка, что сервер и БД живы)
 - [ ] CORS для фронта: `go get github.com/gin-contrib/cors` (разрешить origin фронта, `AllowCredentials: true` — нужно
