@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/seriiserii825/go-flyline/internal/platform/middleware"
 )
 
 const (
@@ -32,8 +33,10 @@ func New(addr, mode string, log *slog.Logger) *Server {
 	gin.SetMode(mode)
 
 	engine := gin.New()
-	engine.Use(gin.Recovery()) // паника в хендлере → 500, а не падение процесса
-	engine.Use(gin.Logger())   // временно; заменим на slog-middleware из platform/middleware
+	engine.Use(
+		middleware.RequestLogger(log), // снаружи: видит итоговый статус, в т.ч. 500 после паники
+		gin.Recovery(),                // внутри: ловит панику в хендлере → 500
+	)
 
 	return &Server{
 		engine: engine,

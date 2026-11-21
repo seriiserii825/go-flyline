@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/seriiserii825/go-flyline/internal/platform/config"
 	"github.com/seriiserii825/go-flyline/internal/platform/httpserver"
+	"github.com/seriiserii825/go-flyline/internal/platform/logger"
 )
 
 func main() {
@@ -29,7 +30,8 @@ func run() error {
 		return err
 	}
 
-	log := slog.Default() // заменим на logger.New(...) из platform/logger
+	log := logger.New(cfg.GinMode)
+	slog.SetDefault(log) // чтобы slog.Error(...) в main тоже шёл через этот логгер
 
 	srv := httpserver.New(cfg.HTTPAddr(), cfg.GinMode, log)
 

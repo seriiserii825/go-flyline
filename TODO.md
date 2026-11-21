@@ -47,7 +47,8 @@
 
   Правила:
 
-  - `gin` импортируется только в `handler.go`, `middleware.go`, `routes.go`, `cookie.go` и в `platform/httpserver`
+  - `gin` импортируется только в `handler.go`, `middleware.go`, `routes.go`, `cookie.go` и в `platform/httpserver`,
+    `platform/middleware`
   - импорты только `auth → user`, обратно нельзя
 
 - [x] Добавить `.env.example` (без секретов) — `.gitignore` его уже пропускает
@@ -60,14 +61,16 @@
 
 - [x] `go get github.com/gin-gonic/gin`
 - [x] `internal/platform/httpserver`: создать `gin.New()` + `gin.Recovery()` + свой логгер (slog)
+- [x] `internal/platform/logger`: slog, текст в debug / JSON в release, `slog.SetDefault`
+- [x] `internal/platform/middleware/request_logger.go`: строка лога на запрос (5xx → Error, 4xx → Warn)
 - [x] Режим через env: `GIN_MODE=debug|release` (`gin.SetMode(cfg.GinMode)`)
-- [ ] Группа роутов `/api/v1`
+- [x] Группа роутов `/api/v1`
 - [ ] `GET /api/v1/health` → `{"status":"ok"}` (проверка, что сервер и БД живы)
 - [ ] CORS для фронта: `go get github.com/gin-contrib/cors` (разрешить origin фронта, `AllowCredentials: true` — нужно
       для cookie)
 - [ ] Единый формат ошибок: `{"error": {"code": "...", "message": "..."}}`
-- [ ] Graceful shutdown (`http.Server` + `signal.NotifyContext`)
-- [ ] Цель `run` в Makefile запускает сервер, проверить `curl localhost:$HTTP_PORT/api/v1/health`
+- [x] Graceful shutdown (`http.Server` + `signal.NotifyContext`)
+- [x] Цель `run` в Makefile запускает сервер, проверить `curl localhost:$HTTP_PORT/api/v1/health`
 
 ## 2. База данных
 
