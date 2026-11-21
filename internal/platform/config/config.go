@@ -13,8 +13,8 @@ type Config struct {
 	GinMode      string        `envconfig:"GIN_MODE" default:"debug"`
 	DatabaseURL  string        `envconfig:"DATABASE_URL" required:"true"`
 	JWTSecret    string        `envconfig:"JWT_SECRET" required:"true"`
-	JWTAccessTTL time.Duration `envconfig:"JWT_ACCESS_TTL" default:"15m"`
-	RefreshTTL   time.Duration `envconfig:"JWT_REFRESH_TTL" default:"720h"`
+	JWTAccessTTL time.Duration `envconfig:"JWT_ACCESS_TTL" required:"true"`
+	RefreshTTL   time.Duration `envconfig:"JWT_REFRESH_TTL" required:"true"`
 }
 
 func Load() (Config, error) {
