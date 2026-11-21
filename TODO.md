@@ -10,22 +10,49 @@
 ## 0. Инициализация проекта
 
 - [x] `go mod init github.com/seriiserii825/go-flyline`
-- [ ] Структура папок (как в go-tasks-app):
+- [ ] Структура папок (по фичам):
   ```
-  cmd/flyline/main.go
-  internal/core/        # config, db, logger, http-сервер, middleware
-  internal/features/    # auth/, users/ (handler, service, repository, dto)
+  cmd/flyline/main.go          # только сборка зависимостей и запуск
+  internal/
+    platform/                  # общая инфраструктура, без бизнес-логики
+      config/config.go         # чтение .env (envconfig)
+      database/postgres.go     # pgxpool + Ping
+      logger/logger.go         # slog
+      httpserver/server.go     # gin.New, middleware, graceful shutdown
+      httpserver/errors.go     # единый формат ошибок
+      middleware/              # cors.go, request_logger.go
+    features/
+      user/
+        model.go               # User (структура из БД)
+        dto.go                 # UserResponse (без password_hash)
+        errors.go              # ErrNotFound, ErrEmailTaken
+        repository.go          # Create, GetByEmail, GetByID
+        service.go
+        handler.go             # GET /me
+        routes.go              # RegisterRoutes(rg, authMW gin.HandlerFunc)
+      auth/
+        dto.go                 # RegisterRequest, LoginRequest, TokenResponse
+        errors.go              # ErrInvalidCredentials, ErrTokenRevoked
+        tokens.go              # выпуск/проверка JWT, генерация+хэш refresh
+        cookie.go              # set/clear refresh cookie
+        repository.go          # refresh_tokens
+        service.go             # Register, Login, Refresh, Logout, LogoutAll
+        handler.go
+        middleware.go          # AuthRequired
+        routes.go              # RegisterRoutes(rg)
   migrations/
-  docs/                 # генерируется swag, не править руками
+  docs/                        # генерируется swag, руками не править
   ```
+- [ ] Правило: `gin` импортируется только в `handler.go`, `middleware.go`, `routes.go`, `cookie.go` и в `platform/httpserver`
+- [ ] Правило: импорты только `auth → user`, обратно нельзя
 - [ ] Добавить `.env.example` (без секретов) — `.gitignore` его уже пропускает
 - [ ] Переменные в `.env`: `HTTP_PORT`, `JWT_ACCESS_SECRET`, `JWT_ACCESS_TTL=15m`, `REFRESH_TTL=720h`, `DATABASE_URL`
-- [ ] Конфиг через `envconfig` (`internal/core/config`)
+- [ ] Конфиг через `envconfig` (`internal/platform/config`)
 
 ## 1. Gin: установка и настройка
 
 - [ ] `go get github.com/gin-gonic/gin`
-- [ ] `internal/core/server`: создать `gin.New()` + `gin.Recovery()` + свой логгер (zap)
+- [ ] `internal/platform/httpserver`: создать `gin.New()` + `gin.Recovery()` + свой логгер (slog)
 - [ ] Режим через env: `GIN_MODE=debug|release`
 - [ ] Группа роутов `/api/v1`
 - [ ] `GET /api/v1/health` → `{"status":"ok"}` (проверка, что сервер и БД живы)
@@ -38,7 +65,7 @@
 ## 2. База данных
 
 - [ ] `go get github.com/jackc/pgx/v5` (пул `pgxpool`)
-- [ ] `internal/core/db`: подключение + `Ping` при старте
+- [ ] `internal/platform/database`: подключение + `Ping` при старте
 - [ ] `make migrate-create seq=create_users`:
   - `id uuid pk`, `email text unique not null`, `password_hash text not null`, `created_at`, `updated_at`
 - [ ] `make migrate-create seq=create_refresh_tokens`:
@@ -75,10 +102,10 @@
 - [ ] `go get github.com/golang-jwt/jwt/v5`
 - [ ] `golang.org/x/crypto/bcrypt` — хэш паролей
 
-Репозиторий (`features/users`, `features/auth`):
+Репозиторий (`features/user`, `features/auth`):
 
-- [ ] `users`: `Create`, `GetByEmail`, `GetByID`
-- [ ] `refresh_tokens`: `Create`, `GetByHash`, `Revoke`, `RevokeAllForUser`
+- [ ] `user/repository.go` (таблица `users`): `Create`, `GetByEmail`, `GetByID`
+- [ ] `auth/repository.go` (таблица `refresh_tokens`): `Create`, `GetByHash`, `Revoke`, `RevokeAllForUser`
 
 Сервис:
 
