@@ -1,6 +1,9 @@
 include .env
 export
 
+.PHONY: env-up env-down env-port-forward env-port-stop \
+        migrate-create migrate-up migrate-down migrate-action migrate-force run
+
 MAKEFLAGS += --no-print-directory
 
 env-up:
