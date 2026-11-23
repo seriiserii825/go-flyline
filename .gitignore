@@ -25,6 +25,7 @@ coverage.out
 .env
 .env.*
 !.env.example
+!.env.gpg
 
 # IDE
 .idea/
